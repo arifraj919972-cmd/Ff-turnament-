@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080a08">
+  <title>Tournament App</title>
+  <style>
+    :root {
+      --bg: #080a08;
+      --card: #151713;
+      --gold: #eac33e;
+      --text: #ffffff;
+      --muted: #aaa99f;
+      --green: #20c879;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      padding-bottom: 82px;
+    }
+
+    button { cursor: pointer; font: inherit; }
+
+    header {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 17px;
+      background: #030403;
+      border-bottom: 1px solid #292719;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .support {
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      background: #11110b;
+      color: var(--gold);
+      padding: 10px 12px;
+    }
+
+    .banner {
+      margin: 12px;
+      height: 190px;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      background:
+        radial-gradient(ellipse at center, #443713 0%, #17140a 45%, #080a08 80%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .banner h1 {
+      color: var(--gold);
+      font-size: clamp(25px, 7vw, 39px);
+      margin: 0 0 9px;
+      text-shadow: 0 2px 12px #000;
+    }
+
+    .banner p {
+      margin: 0;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .banner small { color: #ddd1a0; }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      padding: 12px;
+      border-bottom: 1px solid #27271e;
+    }
+
+    .status {
+      min-height: 83px;
+      background: #0c0e0b;
+      border: 1px solid #494020;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      padding: 9px 3px;
+    }
+
+    .status span {
+      display: block;
+      font-size: 25px;
+      margin-bottom: 7px;
+    }
+
+    .status.active {
+      border-color: var(--gold);
+      background: #211c0b;
+      color: var(--gold);
+    }
+
+    .section { padding: 12px; }
+
+    .section h2 {
+      font-size: 27px;
+      margin: 19px 0 16px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .category {
+      padding: 0;
+      border: 1px solid #24241d;
+      background: #171815;
+      color: white;
+      text-align: center;
+      font-weight: 800;
+      min-width: 0;
+    }
+
+    .category img {
+      width: 100%;
+      aspect-ratio: 1.12;
+      object-fit: cover;
+      display: block;
+      background: #26251d;
+    }
+
+    .category-name {
+      display: flex;
+      min-height: 54px;
+      justify-content: center;
+      align-items: center;
+      padding: 7px 2px;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .empty {
+      border: 1px solid #383222;
+      border-radius: 12px;
+      padding: 24px 15px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 15px;
+    }
+
+    .match-card {
+      background: var(--card);
+      border: 1px solid #514322;
+      border-radius: 12px;
+      margin: 12px 0;
+      padding: 15px;
+    }
+
+    .match-card h3 { margin: 0 0 10px; color: var(--gold); }
+    .match-card p { margin: 7px 0; color: #ddd; font-size: 14px; }
+
+    .join {
+      width: 100%;
+      background: var(--gold);
+      border: 0;
+      border-radius: 8px;
+      color: #111;
+      font-weight: 800;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #050605;
+      border-top: 1px solid #383020;
+      z-index: 10;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .nav-button {
+      border: 0;
+      background: transparent;
+      color: #92939b;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .nav-button span {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 3px;
+    }
+
+    .nav-button.active { color: var(--gold); }
+
+    label { display: block; margin: 14px 0 6px; }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 7px;
+      background: #090a08;
+      border: 1px solid #514322;
+      color: white;
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏆 TOURNAMENT</div>
+  <button class="support" onclick="showSupport()">Help ?</button>
+</header>
+
+<main>
+  <section id="home" class="page active">
+    <div class="banner">
+      <div>
+        <h1>TOURNAMENT APP</h1>
+        <p>PLAY • COMPETE • WIN</p>
+        <small>Free Fire Tournament Hub</small>
+      </div>
+    </div>
+
+    <div class="status-row">
+      <button class="status active" data-status="Upcoming" onclick="setStatus('Upcoming',this)">
+        <span>⌛</span>Upcoming
+      </button>
+      <button class="status" data-status="Live" onclick="setStatus('Live',this)">
+        <span>🏁</span>Live
+      </button>
+      <button class="status" data-status="Completed" onclick="setStatus('Completed',this)">
+        <span>🏆</span>Completed
+      </button>
+    </div>
+
+    <div class="section">
+      <h2>E-Sports Games</h2>
+      <div id="categories" class="categories"></div>
+      <div id="matches"></div>
+    </div>
+  </section>
+
+  <section id="my-matches" class="page section">
+    <h2>🎮 My Matches</h2>
+    <div id="my-list" class="empty">
+      Abhi tumne koi match join nahi kiya hai.
+    </div>
+    <p class="note">
+      Ye pehla demo version hai. Registration abhi online save nahi hota.
+    </p>
+  </section>
+
+  <section id="profile" class="page section">
+    <h2>👤 My Profile</h2>
+    <form id="profile-form">
+      <label for="player-name">Player Name</label>
+      <input id="player-name" placeholder="Apna naam likho">
+
+      <label for="player-uid">Free Fire UID</label>
+      <input id="player-uid" placeholder="Apna UID likho" inputmode="numeric">
+
+      <label for="player-whatsapp">WhatsApp Number</label>
+      <input id="player-whatsapp" placeholder="WhatsApp number" inputmode="tel">
+
+      <button class="join" type="submit">Save Profile on This Device</button>
+    </form>
+    <p class="note">
+      Is demo mein profile sirf isi device ke browser mein save hoti hai.
+    </p>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-button active" data-page="home" onclick="openPage('home',this)">
+    <span>⌂</span>Home
+  </button>
+  <button class="nav-button" data-page="my-matches" onclick="openPage('my-matches',this)">
+    <span>🎮</span>My Matches
+  </button>
+  <button class="nav-button" data-page="profile" onclick="openPage('profile',this)">
+    <span>♙</span>Profile
+  </button>
+</nav>
+
+<script>
+  const gameModes = [
+    {name:"FF FULL MAP", emoji:"🌍"},
+    {name:"LONE WOLF", emoji:"🐺"},
+    {name:"CLASH SQUAD", emoji:"⚔️"},
+    {name:"LW 2vs2", emoji:"🔥"},
+    {name:"CS 2vs2", emoji:"🛡️"},
+    {name:"CS 4vs4", emoji:"💥"},
+    {name:"LW PRIME", emoji:"⚡"},
+    {name:"CS PRIME", emoji:"👑"},
+    {name:"ONLY HEAD", emoji:"🎯"},
+    {name:"FREE MATCH", emoji:"🎮"}
+  ];
+
+  let currentStatus = "Upcoming";
+  let selectedMode = "";
+  let joinedMatches = JSON.parse(localStorage.getItem("joinedMatches") || "[]");
+
+  const categories = document.getElementById("categories");
+
+  gameModes.forEach((mode, index) => {
+    const button = document.createElement("button");
+    button.className = "category";
+    button.innerHTML = `
+      <div style="aspect-ratio:1.12;display:flex;align-items:center;justify-content:center;
+        background:linear-gradient(145deg,#493715,#14130d);font-size:48px;">
+        ${mode.emoji}
+      </div>
+      <div class="category-name">${mode.name}</div>`;
+    button.onclick = () => {
+      selectedMode = mode.name;
+      document.querySelectorAll(".category").forEach(el => el.style.outline = "none");
+      button.style.outline = "2px solid #eac33e";
+      renderMatches();
+    };
+    categories.appendChild(button);
+  });
+
+  // Demo tournaments. These are examples, not real scheduled matches.
+  const tournaments = [
+    {id:1,name:"FF Full Map Tournament",mode:"FF FULL MAP",status:"Upcoming",entry:"₹0",prize:"Prize to be announced",slots:48,date:"Date to be announced"},
+    {id:2,name:"Lone Wolf Match",mode:"LONE WOLF",status:"Upcoming",entry:"₹0",prize:"Prize to be announced",slots:2,date:"Date to be announced"},
+    {id:3,name:"Clash Squad Tournament",mode:"CLASH SQUAD",status:"Live",entry:"₹0",prize:"Prize to be announced",slots:48,date:"Date to be announced"}
+  ];
+
+  function openPage(page, button) {
+    document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+    document.querySelectorAll(".nav-button").forEach(el => el.classList.remove("active"));
+    button.classList.add("active");
+    if (page === "my-matches") renderMyMatches();
+    window.scrollTo(0,0);
+  }
+
+  function setStatus(status, button) {
+    currentStatus = status;
+    document.querySelectorAll(".status").forEach(el => el.classList.remove("active"));
+    button.classList.add("active");
+    renderMatches();
+  }
+
+  function renderMatches() {
+    const container = document.getElementById("matches");
+    const filtered = tournaments.filter(t =>
+      t.status === currentStatus && (!selectedMode || t.mode === selectedMode)
+    );
+    container.innerHTML = `<h2>${selectedMode || currentStatus + " Matches"}</h2>`;
+
+    if (!filtered.length) {
+      container.innerHTML += `<div class="empty">Is category mein abhi koi ${currentStatus.toLowerCase()} tournament listed nahi hai.</div>`;
+      return;
+    }
+
+    filtered.forEach(t => {
+      const card = document.createElement("div");
+      card.className = "match-card";
+      card.innerHTML = `
+        <h3>${t.name}</h3>
+        <p>🎮 Mode: ${t.mode}</p>
+        <p>💰 Entry Fee: ${t.entry}</p>
+        <p>🏆 Prize: ${t.prize}</p>
+        <p>👥 Slots: ${t.slots}</p>
+        <p>🗓️ ${t.date}</p>
+        <button class="join" onclick="joinTournament(${t.id})">JOIN MATCH</button>`;
+      container.appendChild(card);
+    });
+  }
+
+  function joinTournament(id) {
+    const tournament = tournaments.find(t => t.id === id);
+    if (!tournament) return;
+    const name = localStorage.getItem("playerName");
+    const uid = localStorage.getItem("playerUid");
+    if (!name || !uid) {
+      alert("Pehle Profile mein Player Name aur Free Fire UID save karo.");
+      const profileButton = document.querySelector('[data-page="profile"]');
+      openPage("profile", profileButton);
+      return;
+    }
+    if (!joinedMatches.includes(id)) {
+      joinedMatches.push(id);
+      localStorage.setItem("joinedMatches", JSON.stringify(joinedMatches));
+    }
+    alert("Demo mein match save ho gaya. Abhi online registration active nahi hai.");
+    renderMyMatches();
+  }
+
+  function renderMyMatches() {
+    const container = document.getElementById("my-list");
+    const mine = tournaments.filter(t => joinedMatches.includes(t.id));
+    if (!mine.length) {
+      container.className = "empty";
+      container.textContent = "Abhi tumne koi match join nahi kiya hai.";
+      return;
+    }
+    container.className = "";
+    container.innerHTML = mine.map(t => `
+      <div class="match-card">
+        <h3>${t.name}</h3>
+        <p>Mode: ${t.mode}</p>
+        <p>Status: ${t.status}</p>
+        <p>Entry Fee: ${t.entry}</p>
+      </div>`).join("");
+  }
+
+  document.getElementById("profile-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const name = document.getElementById("player-name").value.trim();
+    const uid = document.getElementById("player-uid").value.trim();
+    const whatsapp = document.getElementById("player-whatsapp").value.trim();
+
+    if (!name || !uid) {
+      alert("Player Name aur Free Fire UID bharna zaroori hai.");
+      return;
+    }
+
+    localStorage.setItem("playerName", name);
+    localStorage.setItem("playerUid", uid);
+    localStorage.setItem("playerWhatsapp", whatsapp);
+    alert("Profile is device par save ho gayi.");
+  });
+
+  function showSupport() {
+    alert("Tournament App Support: Contact details admin setup ke baad yahan add ki jaayengi.");
+  }
+
+  renderMatches();
+
+  document.getElementById("player-name").value = localStorage.getItem("playerName") || "";
+  document.getElementById("player-uid").value = localStorage.getItem("playerUid") || "";
+  document.getElementById("player-whatsapp").value = localStorage.getItem("playerWhatsapp") || "";
+</script>
+</body>
+  </html>
